@@ -10,6 +10,7 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
+    "@databases/queue": "^1.0.0",
     "command-exists": "^1.2.9",
     "commander": "^9.1.0",
     "image-to-ascii": "^3.0.13",

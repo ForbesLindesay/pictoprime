@@ -2,8 +2,10 @@
 
 import { promisify } from 'util'
 import { exec } from 'child_process'
-import { cpus } from 'os';
-import { createHash } from 'crypto';
+import { cpus } from 'os'
+import { createHash } from 'crypto'
+
+import { makePrimeTestPool } from './prime-test/makePrimeTestPool.js'
 
 const execPromise = promisify(exec);
 
@@ -213,12 +215,14 @@ export async function findPrime (original, sophie = false) {
     const rekeyCheck = passes(rekeyAt)
     const restartCheck = passes(rekeyAt * 6)
 
-    console.log(`Starting process, rekey at ${rekeyAt} attempts, with ${simultaneous} checks each attempt.`)
+    console.warn(`Starting process, rekey at ${rekeyAt} attempts, with ${simultaneous} checks each attempt.`)
 
+    const primeTestPool = makePrimeTestPool(simultaneous)
     while (true) {
-        console.log(attempts)
+        console.warn(attempts)
 
-        const tests = generateTests(tested, keyFrame, simultaneous)
+        const tests = (await Promise.all(generateTests(tested, keyFrame, simultaneous).map(async i => await primeTestPool.test(i) ? i : null))).filter(v => v !== null)
+
 
         // Turn the tests into `openssl prime` processes, and wait for them to complete.
         const result = await Promise.all(tests.map(i => execPromise(`openssl prime ${i}`)))
@@ -227,7 +231,9 @@ export async function findPrime (original, sophie = false) {
         const successes = result.filter(i => !i.stdout.includes('not prime'))
         
         // If we had any successes, we can stop.
-        if(successes.length) {
+        if(successes.length && attempts > 40) {
+            primeTestPool.dispose()
+
             const prime = successes.map(i => extractResult(i.stdout))[0]
             const result = { 
                 prime,

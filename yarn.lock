@@ -9,6 +9,11 @@
   dependencies:
     regenerator-runtime "^0.13.4"
 
+"@databases/queue@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@databases/queue/-/queue-1.0.0.tgz#5cdf9e947206c13bd6a3867a94b71d904588f415"
+  integrity sha512-sDbUHer7mmbtihH2yuaobH1hpdKxR2w2Gc42JYn1edX7MEhV3MEimUNtzDbB4pNP6dRt1SigxJvQ/Fbifp555w==
+
 "@jimp/bmp@^0.16.1":
   version "0.16.1"
   resolved "https://registry.npmjs.org/@jimp/bmp/-/bmp-0.16.1.tgz"
